@@ -9,4 +9,20 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Bridie::Application.config.secret_key_base = '9e1b9a0569cf44cf45f06c8f1a03cc31da293ffd97435a599af0e8f7bc7719f532b80a2cf66bb0de2041eb270544d8331c96bc1b5a13b54237d0d0976d4d2c19'
+
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+Bridie::Application.config.secret_key_base = secure_token
